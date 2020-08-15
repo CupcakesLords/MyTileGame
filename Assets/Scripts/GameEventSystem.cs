@@ -10,7 +10,7 @@ public class GameEventSystem : MonoBehaviour
     {
         current = this;
     }
-
+    /*
     public Func<GameObject, int> onTileSelection;
 
     public int TileSelection(GameObject Tile)
@@ -21,5 +21,35 @@ public class GameEventSystem : MonoBehaviour
         }
         return 0;
     }
+    */
+    public Func<int, int> onSelectedTileMove;
 
+    public int SelectedTileMove(int pivot)
+    {
+        if(onSelectedTileMove != null)
+        {
+            return onSelectedTileMove(pivot);
+        }
+        return 0;
+    }
+
+    public Func<GameObject, int> onMatch_Destroy;
+
+    public int Match_Destroy(GameObject identity)
+    {
+        if(onMatch_Destroy != null)
+        {
+            return onMatch_Destroy(identity);
+        }
+        return 0;
+    }
+
+    public Func<GameObject, int, int> onDestroy_RearrangeBar;
+
+    public int RearrangeBar(GameObject identity, int pos)
+    {
+        if (onDestroy_RearrangeBar != null)
+           return onDestroy_RearrangeBar(identity, pos);
+        return 0;
+    }
 }

@@ -7,7 +7,7 @@ public class StackBar : MonoBehaviour
     LinkedList<GameObject> chosenTile;
     void Start()
     {
-        GameEventSystem.current.onTileSelection += Stackup;
+        //GameEventSystem.current.onTileSelection += Stackup;
         chosenTile = new LinkedList<GameObject>();
     }
 
@@ -77,7 +77,10 @@ public class StackBar : MonoBehaviour
         {
             if(iteration >= position)
             {
-                
+                /*
+                int destination = GameEventSystem.current.TileSelection(gameObject);
+                Debug.Log("Position: " + destination);
+                */
             }
             iteration++;
         }
@@ -86,7 +89,7 @@ public class StackBar : MonoBehaviour
 
     private void OnDestroy()
     {
-        GameEventSystem.current.onTileSelection -= Stackup;
+        //GameEventSystem.current.onTileSelection -= Stackup;
     }
 }
 

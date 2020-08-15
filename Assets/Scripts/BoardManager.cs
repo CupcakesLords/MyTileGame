@@ -12,12 +12,19 @@ public class BoardManager : MonoBehaviour
     private GameLevel currentLevel;
     //
     private GameObject[] gameTiles;
+    //
+    public StackInBoard bar;
+    //
+    public int xBar, yBar;
 
     void Start()
     {
         instance = GetComponent<BoardManager>();
         currentLevel = Utils.ReadDefaultGameLevelFromAsset(1);
-        
+
+        xBar = -3; yBar = -3;
+        bar = new StackInBoard();
+ 
         CreateBoard(); 
     }
 

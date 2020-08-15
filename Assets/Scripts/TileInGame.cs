@@ -5,25 +5,63 @@ using UnityEngine;
 public class TileInGame : MonoBehaviour
 {
     private int collisionCount = 0;
+    private bool selected = false;
 
     void Start()
     {
         if (GetComponent<SpriteRenderer>().sortingLayerName != "0")
             gameObject.layer = 2;
+        GameEventSystem.current.onSelectedTileMove += UponOtherTileSelected;
+        GameEventSystem.current.onMatch_Destroy += UponMatchDestruction;
+        GameEventSystem.current.onDestroy_RearrangeBar += UponMatchRearrange;
     }
 
-    private void OnMouseDown()
+    private int UponOtherTileSelected(int pivot)
     {
-        int destination = GameEventSystem.current.TileSelection(gameObject);
-        Debug.Log("Position: " + destination);
+        if (!selected)
+            return 0;
+        if(transform.position.x >= BoardManager.instance.xBar + pivot)
+        {
+            transform.position += new Vector3(1, 0, 0);
+        }
+        return 0;
+    }
+
+    private int UponMatchDestruction(GameObject identity)
+    {
+        if (identity == gameObject)
+        {
+            Debug.Log("DELET THIS");
+            Destroy(gameObject);
+        }
+        return 0;
+    }
+
+    private int UponMatchRearrange(GameObject identity, int pos)
+    {
+        if(selected && identity == gameObject)
+        {
+            transform.position = new Vector3(BoardManager.instance.xBar + pos, BoardManager.instance.yBar, 0);
+        }
+        return 0;
+    }
+
+    private void OnMouseDown() //TILE IS SELECTED
+    {
+        if (selected)
+            return;
+        
+        int destination = BoardManager.instance.bar.StackUp(gameObject);
         Launch(destination);
+
+        BoardManager.instance.bar.CheckForMatch();
+
+        selected = true;
     }
 
     private void Launch(int position)
     {
-        //Vector2 direction = new Vector2(-3 + position, -3);
-        //GetComponent<Rigidbody2D>().AddForce(direction * 300);
-        transform.position = new Vector3(-3 + position, -3, 0);
+        transform.position = new Vector3(BoardManager.instance.xBar + position, BoardManager.instance.yBar, 0);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -46,7 +84,14 @@ public class TileInGame : MonoBehaviour
         {
             collisionCount--;
         }
-        if(collisionCount == 0)
+        if(collisionCount == 0) 
             gameObject.layer = 0;
+    }
+
+    private void OnDestroy()
+    {
+        GameEventSystem.current.onSelectedTileMove -= UponOtherTileSelected;
+        GameEventSystem.current.onMatch_Destroy -= UponMatchDestruction;
+        GameEventSystem.current.onDestroy_RearrangeBar -= UponMatchRearrange;
     }
 }
