@@ -11,27 +11,21 @@ public class TileInGame : MonoBehaviour
     {
         if (GetComponent<SpriteRenderer>().sortingLayerName != "0")
             gameObject.layer = 2;
-        GameEventSystem.current.onSelectedTileMove += UponOtherTileSelected;
-        GameEventSystem.current.onMatch_Destroy += UponMatchDestruction;
-        GameEventSystem.current.onDestroy_RearrangeBar += UponMatchRearrange;
     }
 
-    private int UponOtherTileSelected(int pivot)
+    private int UponOtherTileSelected(GameObject id, int pivot)
     {
-        if (!selected)
-            return 0;
-        if(transform.position.x >= BoardManager.instance.xBar + pivot)
+        if(id == gameObject && selected)
         {
-            transform.position += new Vector3(1, 0, 0);
+            transform.position = new Vector3(BoardManager.instance.xBar + pivot, BoardManager.instance.yBar, 0);
         }
         return 0;
     }
 
     private int UponMatchDestruction(GameObject identity)
     {
-        if (identity == gameObject)
+        if (identity == gameObject && selected)
         {
-            Debug.Log("DELET THIS");
             Destroy(gameObject);
         }
         return 0;
@@ -50,23 +44,18 @@ public class TileInGame : MonoBehaviour
     {
         if (selected)
             return;
-        
-        int destination = BoardManager.instance.bar.StackUp(gameObject);
-        Launch(destination);
-
-        BoardManager.instance.bar.CheckForMatch();
-
         selected = true;
-    }
 
-    private void Launch(int position)
-    {
-        transform.position = new Vector3(BoardManager.instance.xBar + position, BoardManager.instance.yBar, 0);
+        GameEventSystem.current.onSelectedTileMove += UponOtherTileSelected;
+        GameEventSystem.current.onMatch_Destroy += UponMatchDestruction;
+        GameEventSystem.current.onDestroy_RearrangeBar += UponMatchRearrange;
+
+        BoardManager.instance.bar.StackUp(gameObject);
+        BoardManager.instance.bar.CheckForMatch();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        //Debug.Log("HIT: " + GetComponent<SpriteRenderer>().sprite);
         int _this = int.Parse(GetComponent<SpriteRenderer>().sortingLayerName);
         int _other = int.Parse(collision.GetComponent<SpriteRenderer>().sortingLayerName);
         if(_this == _other + 1) //this object is one layer beneath the other
@@ -77,7 +66,6 @@ public class TileInGame : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        //Debug.Log("OMEGALUL: " + GetComponent<SpriteRenderer>().sprite);
         int _this = int.Parse(GetComponent<SpriteRenderer>().sortingLayerName);
         int _other = int.Parse(collision.GetComponent<SpriteRenderer>().sortingLayerName);
         if (_this == _other + 1) //this object is one layer beneath the other
@@ -90,8 +78,11 @@ public class TileInGame : MonoBehaviour
 
     private void OnDestroy()
     {
-        GameEventSystem.current.onSelectedTileMove -= UponOtherTileSelected;
-        GameEventSystem.current.onMatch_Destroy -= UponMatchDestruction;
-        GameEventSystem.current.onDestroy_RearrangeBar -= UponMatchRearrange;
+        if (selected)
+        {
+            GameEventSystem.current.onSelectedTileMove -= UponOtherTileSelected;
+            GameEventSystem.current.onMatch_Destroy -= UponMatchDestruction;
+            GameEventSystem.current.onDestroy_RearrangeBar -= UponMatchRearrange;
+        }
     }
 }
