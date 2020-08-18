@@ -22,13 +22,13 @@ public class GameEventSystem : MonoBehaviour
         return 0;
     }
     */
-    public Func<GameObject, int, int> onSelectedTileMove;
+    public Func<int, int> onSelectedTileMove;
 
-    public int SelectedTileMove(GameObject id, int pivot)
+    public int SelectedTileMove(int pivot)
     {
         if(onSelectedTileMove != null)
         {
-            return onSelectedTileMove(id, pivot);
+            return onSelectedTileMove(pivot);
         }
         return 0;
     }

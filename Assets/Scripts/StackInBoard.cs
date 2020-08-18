@@ -10,13 +10,7 @@ public class StackInBoard
     {
         int position = CalculatePosititonOfNewTile(Tile);                                 //insert new tile to the list, calculate its position in the list
 
-        //GameEventSystem.current.SelectedTileMove(position);                               //adjust the bar so the new chosen tile can fit in
-        int iterator = 0;
-        foreach(GameObject i in chosenTile)
-        {
-            GameEventSystem.current.SelectedTileMove(i, iterator);
-            iterator++;
-        }
+        GameEventSystem.current.SelectedTileMove(position);                               //adjust the bar so the new chosen tile can fit in
 
         return position;                                                                  //return position of the new tile so move it
     }
